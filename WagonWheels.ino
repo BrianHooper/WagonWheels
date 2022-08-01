@@ -1,22 +1,29 @@
-//#include "LedControl.h"
+#include "LedControl.h"
 
-float rpm = 0.0;
-float leds = ((float)48);
-float ratio = 7.0 / 30.0;
- 
+int delayTime = 0;
+float leds = (float) LED_COUNT;
+uint64_t last_read_time;
+
 void setup() {
-  Serial.begin(115200);      // Initialize Serial Port
+  Serial.begin(115200);
+  initialize();
+  last_read_time = micros();
 }
  
 void loop() {
     if (Serial.available() > 0) {
-        rpm = Serial.parseFloat();
+        last_read_time = micros();
+        float rpm = Serial.parseFloat();
+        float revolutionsPerSecond = rpm / 60.0;
+        delayTime = 1000 * (1 / (revolutionsPerSecond * leds));
     }
 
-    if (rpm > 0.0) {
-        float revolutionsPerSecond = rpm / 60.0;
-        float delayTime = (revolutionsPerSecond) / leds;
+    if ((micros() - last_read_time) / 1000000.0 >= 10.0) {
+        delayTime = 0;
+    }
+
+    if (delayTime > 0) {
         delay(delayTime);
-        //advance(1);
+        advance(1);
     }
   }

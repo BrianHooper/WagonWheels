@@ -17,6 +17,7 @@ void setPixel(int index, uint32_t color) {
     uint8_t greenChannel = (uint8_t)(color & 0x000000FF);
     strip.setPixelColor(index, redChannel, blueChannel, greenChannel);
 }
+
 void draw() {
     for(int i = 0; i < LED_COUNT; i++) {
         strip.setPixelColor(i, pixels[i]);
@@ -31,24 +32,8 @@ void initialize() {
     pixels[0] = 0xFF0000;
     pixels[1] = 0xFF0000;
     pixels[2] = 0xFF0000;
-
-    // for(int i = 0; i < LED_COUNT; i += 4) {
-    //     pixels[i] = 0xFF0000;
-    //     setPixel(i, pixels[i]);
-
-    //     pixels[i + 1] = 0x0000FF;
-    //     setPixel(i + 1, pixels[i + 1]);
-
-    //     pixels[i + 2] = 0x00FF00;
-    //     setPixel(i + 2, pixels[i + 2]);
-
-    //     pixels[i + 3] = 0xFF00FF;
-    //     setPixel(i + 3, pixels[i + 3]);
-    // }
     draw();
 }
-
-
 
 int calculateDistance(float percent) {
     return (int)roundf(percent * LED_COUNT) % LED_COUNT;
