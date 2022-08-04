@@ -3,9 +3,7 @@
 
 #include <stdint.h>
 #include "WheelController.h"
-
-#define DEFAULT_DELAY_TIME_MS 10
-#define TIMEOUT_SECONDS 0
+#include "Constants.h"
 
 class RpmController {
 	public:
@@ -18,15 +16,33 @@ class RpmController {
         WheelController* BackRight;
 
         float leds;
-        int rpm = 0;
+        float rpm = 0;
         int delayTime = 0;
         uint64_t last_read_time = 0;
+        uint64_t advance_counter = 0;
+        uint32_t pixels[LED_COUNT];
 
+        uint8_t serialReadIndex;
+        union {
+            float rpm;
+            uint8_t bytes[4];
+        } serialReadBuffer;
+
+        int spokeSize = 3;
+        int spoke1start = 0;
+        int spoke2start = 12;
+        int spoke3start = 24;
+        int spoke4start = 36;
+
+        void InitializePixels();
         void CheckForTimeout(uint64_t loopStartTime);
         void AdvanceWheels();
 		void CalculateDelayTime();
+        void CheckForSerialRead();
         void UpdateRPM();
         void DelayWithOffset(uint64_t loopStartTime);
+        void Show();
+        void SetPixel(int index, uint32_t color);
 };
 
 #endif

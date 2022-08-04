@@ -2,19 +2,46 @@
 #include <Arduino.h>
 
 RpmController::RpmController() {
-    Serial.println("RpmController");
     this->FrontLeft = new WheelController(2);
     this->FrontRight = new WheelController(3);
     this->BackLeft = new WheelController(4);
     this->BackRight = new WheelController(5);
 
     leds = (float) 48;
+    InitializePixels();
+
+    if (START_RPM > 0) {
+        rpm = START_RPM;
+        CalculateDelayTime();
+    }
+}
+
+void RpmController::InitializePixels() {
+    for(int i = 0; i < LED_COUNT; i++) {
+        if (i < spoke1start + spokeSize && i >= spoke1start) {
+            pixels[i] = 0x00FF00;
+        }
+        else if (i < spoke2start + spokeSize && i >= spoke2start) {
+            pixels[i] = 0x0000FF;
+        }
+        else if (i < spoke3start + spokeSize && i >= spoke3start) {
+            pixels[i] = 0xFF0000;
+        }
+        else if (i < spoke4start + spokeSize && i >= spoke4start) {
+            pixels[i] = 0x00FFFF;
+        }
+        else {
+            pixels[i] = 0;
+        }
+        SetPixel(i, pixels[i]);
+    }
+    Show();
 }
 
 void RpmController::UpdateWheels() {
     uint64_t loopStartTime = micros();
     CheckForTimeout(loopStartTime);
-    UpdateRPM();
+    CheckForSerialRead();
     AdvanceWheels();
     DelayWithOffset(loopStartTime);
 }
@@ -24,10 +51,31 @@ void RpmController::AdvanceWheels() {
         return;
     }
 
-    FrontLeft->Advance();
-    FrontRight->Advance();
-    BackLeft->Advance();
-    BackRight->Advance();
+    advance_counter++;
+
+    uint32_t first = pixels[0];
+    for(int i = 0; i < LED_COUNT - 1; i++) {
+        pixels[i] = pixels[i + 1];
+        SetPixel(i, pixels[i]);
+    }
+    pixels[LED_COUNT - 1] = first;
+    SetPixel(LED_COUNT - 1, first);
+    Show();
+
+}
+
+void RpmController::SetPixel(int index, uint32_t color) {
+    FrontLeft->SetPixel(index, color);
+    FrontRight->SetPixel(index, color);
+    BackLeft->SetPixel(index, color);
+    BackRight->SetPixel(index, color);
+}
+
+void RpmController::Show() {
+    FrontLeft->Show();
+    FrontRight->Show();
+    BackLeft->Show();
+    BackRight->Show();
 }
 
 void RpmController::DelayWithOffset(uint64_t loopStartTime) {
@@ -40,7 +88,6 @@ void RpmController::DelayWithOffset(uint64_t loopStartTime) {
 
     // Check for edge case, micros 64-bit unsigned int rolled over to zero between start and end
     if (loopEndTime < loopStartTime) {
-        Serial.println("edge case");
         delay(delayTime);
         return;
     }
@@ -52,14 +99,25 @@ void RpmController::DelayWithOffset(uint64_t loopStartTime) {
     }
 }
 
-void RpmController::UpdateRPM() {
+void RpmController::CheckForSerialRead() {
     if (Serial.available() > 0) {
         last_read_time = micros();
 
-        // #TODO This may need to be a float value in order to be precise enough
-        // and may need to switch to delayMicroseconds
-        rpm = (int) Serial.read();
-        CalculateDelayTime();
+        if (USE_FLOAT_SERIAL) {
+            serialReadBuffer.bytes[serialReadIndex++] = Serial.read();
+            if (serialReadIndex >= SERIAL_BUFFER_SIZE) {
+                serialReadIndex = 0;
+                
+                if (serialReadBuffer.rpm >= 0 && serialReadBuffer.rpm <= MAX_RPM) {
+                    rpm = serialReadBuffer.rpm;
+                    CalculateDelayTime();
+                }
+            }
+        }
+        else {
+            rpm = (int) Serial.read();
+            CalculateDelayTime();
+        }
     }
 }
 
@@ -73,12 +131,18 @@ void RpmController::CalculateDelayTime() {
 }
 
 void RpmController::CheckForTimeout(uint64_t loopStartTime) {
-    if (TIMEOUT_SECONDS == 0 || loopStartTime < last_read_time) {
+    if (loopStartTime < last_read_time || (TIMEOUT_SECONDS == 0 && serialReadIndex == 0)) {
         return;
     }
 
-    int secondsSinceLastUpdate = (loopStartTime - last_read_time) / 1000000;
-    if (secondsSinceLastUpdate >= TIMEOUT_SECONDS) {
+    int msSinceLastUpdate = (loopStartTime - last_read_time) / 1000;
+
+    if (msSinceLastUpdate > READ_BUFFER_CLEAR_TIME_MS && serialReadIndex > 0) {
+        serialReadIndex = 0;
+        serialReadBuffer.rpm = 0;
+    }
+
+    if (TIMEOUT_SECONDS > 0 && msSinceLastUpdate >= TIMEOUT_SECONDS * 1000) {
         rpm = 0;
     }
 }

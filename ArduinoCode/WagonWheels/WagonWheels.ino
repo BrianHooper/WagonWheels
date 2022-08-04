@@ -1,18 +1,16 @@
 #include "RpmController.h"
-
-#define BAUD_RATE 115200
+#include "Logger.h"
+#include "Constants.h"
 
 RpmController* rpmController;
 
 void setup() {
     Serial.begin(BAUD_RATE);
-    // delay(5000);
-    // Serial.println("Starting");
+    Logger::println("Starting", 5000);
     rpmController = new RpmController();
 }
- 
+
 void loop() {
-    //Serial.println("Not Crashed");
+    Logger::println("Not crashed", 1000);
     rpmController->UpdateWheels();
-    //delay(1000);
 }
