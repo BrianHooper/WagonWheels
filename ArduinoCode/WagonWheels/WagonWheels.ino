@@ -1,29 +1,18 @@
-#include "LedControl.h"
+#include "RpmController.h"
 
-int delayTime = 0;
-float leds = (float) LED_COUNT;
-uint64_t last_read_time;
+#define BAUD_RATE 115200
+
+RpmController* rpmController;
 
 void setup() {
-  Serial.begin(115200);
-  initialize();
-  last_read_time = micros();
+    Serial.begin(BAUD_RATE);
+    // delay(5000);
+    // Serial.println("Starting");
+    rpmController = new RpmController();
 }
  
 void loop() {
-    if (Serial.available() > 0) {
-        //last_read_time = micros();
-        int rpm = (int)Serial.read();
-        float revolutionsPerSecond = rpm / 60.0;
-        delayTime = 1000 * (1 / (revolutionsPerSecond * leds));
-    }
-
-    //if ((micros() - last_read_time) / 1000000.0 >= 10.0) {
-    //    delayTime = 0;
-    //}
-
-    if (delayTime > 0) {
-        delay(delayTime);
-        advance(1);
-    }
-  }
+    //Serial.println("Not Crashed");
+    rpmController->UpdateWheels();
+    //delay(1000);
+}
