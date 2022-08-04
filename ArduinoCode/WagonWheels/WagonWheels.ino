@@ -12,15 +12,15 @@ void setup() {
  
 void loop() {
     if (Serial.available() > 0) {
-        last_read_time = micros();
-        float rpm = Serial.parseFloat();
+        //last_read_time = micros();
+        int rpm = (int)Serial.read();
         float revolutionsPerSecond = rpm / 60.0;
         delayTime = 1000 * (1 / (revolutionsPerSecond * leds));
     }
 
-    if ((micros() - last_read_time) / 1000000.0 >= 10.0) {
-        delayTime = 0;
-    }
+    //if ((micros() - last_read_time) / 1000000.0 >= 10.0) {
+    //    delayTime = 0;
+    //}
 
     if (delayTime > 0) {
         delay(delayTime);
