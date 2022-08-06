@@ -6,7 +6,7 @@
 #define START_RPM 10
 
 // ---- Serial communication
-#define BAUD_RATE 115200
+#define BAUD_RATE 9600
 #define SERIAL_BUFFER_SIZE 4
 #define READ_BUFFER_CLEAR_TIME_MS 500
 #define USE_FLOAT_SERIAL false

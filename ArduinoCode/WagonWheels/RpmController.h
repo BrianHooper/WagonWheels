@@ -37,7 +37,7 @@ class RpmController {
         void InitializePixels();
         void CheckForTimeout(uint64_t loopStartTime);
         void AdvanceWheels();
-		void CalculateDelayTime();
+        void CalculateDelayTime();
         void CheckForSerialRead();
         void UpdateRPM();
         void DelayWithOffset(uint64_t loopStartTime);
