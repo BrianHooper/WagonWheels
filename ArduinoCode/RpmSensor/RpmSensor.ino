@@ -6,12 +6,12 @@
 #define SENSORS_PER_WHEEL 3.0
 #define MULTIPLIER 0.87
 #define WHEEL_SIZE_RATIO 0.125
-#define TIMEOUT_SECONDS 1.0
+#define TIMEOUT_SECONDS 2.0
 
 float hall_counts_per_measurement = HALL_THRESHOLD / SENSORS_PER_WHEEL;
 
 void setup() {
-    Serial.begin(9600);
+    Serial.begin(BAUD_RATE);
     pinMode(HALL_PIN, INPUT);
 }
 

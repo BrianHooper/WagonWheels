@@ -1,0 +1,114 @@
+<html>
+    <head>
+
+        <style type="text/css">
+            .dot {
+  height: 10px;
+  width: 10px;
+  background-color: #bbb;
+  border-radius: 50%;
+  position: absolute;
+}
+        </style>
+    </head>
+    <body>
+        <div id="container">
+        </div>
+
+
+        <script type="text/javascript">
+            var diameter = 20;
+
+var initialRimPoints = [];
+var points = [];
+
+initialRimPoints.push([9,7]);
+initialRimPoints.push([10,7]);
+initialRimPoints.push([11,7]);
+initialRimPoints.push([12,7]);
+initialRimPoints.push([13,7]);
+initialRimPoints.push([14,8]);
+initialRimPoints.push([15,9]);
+initialRimPoints.push([16,10]);
+initialRimPoints.push([17,11]);
+initialRimPoints.push([17,12]);
+initialRimPoints.push([17,13]);
+initialRimPoints.push([17,14]);
+initialRimPoints.push([17,15]);
+initialRimPoints.push([16,16]);
+initialRimPoints.push([15,17]);
+initialRimPoints.push([14,18]);
+initialRimPoints.push([13,19]);
+initialRimPoints.push([12,19]);
+initialRimPoints.push([11,19]);
+initialRimPoints.push([10,19]);
+initialRimPoints.push([9,19]);
+initialRimPoints.push([8,18]);
+initialRimPoints.push([7,17]);
+initialRimPoints.push([6,16]);
+initialRimPoints.push([5,15]);
+initialRimPoints.push([5,14]);
+initialRimPoints.push([5,13]);
+initialRimPoints.push([5,12]);
+initialRimPoints.push([5,11]);
+initialRimPoints.push([6,10]);
+initialRimPoints.push([7,9]);
+initialRimPoints.push([8,8]);
+
+for(var i = 0; i < initialRimPoints.length; i++) {
+  var node = document.createElement("div");
+  node.classList.add("dot");
+  node.setAttribute("style", `top:${diameter * initialRimPoints[i][0] - 80}px; left:${diameter * initialRimPoints[i][1] - 100}px;`);
+  document.getElementById("container").appendChild(node);
+  points.push(node);
+}
+
+var spokeRefs = [2, 6, 10, 14, 18, 22, 26, 30];
+points[spokeRefs[0]].style.backgroundColor = "#0000FF";
+points[spokeRefs[1]].style.backgroundColor = "#FF00FF";
+points[spokeRefs[2]].style.backgroundColor = "#F00005";
+points[spokeRefs[3]].style.backgroundColor = "#00FFFF";
+points[spokeRefs[4]].style.backgroundColor = "#FF0000";
+points[spokeRefs[5]].style.backgroundColor = "#00FF00";
+points[spokeRefs[6]].style.backgroundColor = "#FFFF00";
+points[spokeRefs[7]].style.backgroundColor = "#FF0000";
+
+
+var spokesInit = [[[6,13],[7,13],[8,13],[9,13],[10,13]],[[8,16],[9,15],[10,14]],[[11,18],[11,17],[11,16],[11,15],[11,14]],[[14,16],[13,15],[12,14]],[[16,13],[15,13],[14,13],[13,13],[12,13]],[[14,10],[13,11],[12,12]],[[11,8],[11,9],[11,10],[11,11],[11,12]],[[8,10],[9,11],[10,12]]];
+
+var spokes = [];
+
+
+var count = 0;
+for(var i = 0; i < spokesInit.length; i++) {
+    var spoke = [];
+    var spokeInit = spokesInit[i];
+    for(var j = 0; j < spokeInit.length; j++) {
+        var top = (diameter * spokeInit[j][0]) - 80;
+        var left = (diameter * spokeInit[j][1]) - 100;
+        var node = document.createElement("div");
+        node.classList.add("dot");
+        node.setAttribute("style", `top:${top}px; left:${left}px;`);
+        document.getElementById("container").appendChild(node);
+        spoke.push(node);
+    }
+    spokes.push(spoke);
+}
+
+console.log(count);
+//   var spokeInit = spokesInit[i];
+// for(var j = 0; j < spokeInit.length; i++) {
+//       var top = diameter * spokeInit[j][0] - 80;
+//       var left = diameter * spokeInit[j][1] - 100;
+//       var node = document.createElement("div");
+//       node.classList.add("dot");
+//       node.setAttribute("style", `top:${top}px; left:${left}px;`);
+//       document.getElementById("container").appendChild(node);
+//       spoke.push(node);
+//   }
+//   spokes.push(spoke);
+// } 
+// console.log("Done");
+        </script>
+    </body>
+</html>
